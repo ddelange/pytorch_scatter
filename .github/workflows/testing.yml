@@ -15,8 +15,8 @@ jobs:
       fail-fast: false
       matrix:
         os: [ubuntu-latest, windows-latest]
-        python-version: [3.9]
-        torch-version: [2.6.0, 2.7.0]
+        python-version: ['3.10']
+        torch-version: [2.9.0, 2.10.0]
 
     steps:
       - uses: actions/checkout@v2
@@ -28,14 +28,6 @@ jobs:
       - name: Install PyTorch ${{ matrix.torch-version }}
         run: |
           pip install torch==${{ matrix.torch-version }} --extra-index-url https://download.pytorch.org/whl/cpu
-
-      - name: Patch PyTorch static constexpr on Windows
-        if: ${{ runner.os == 'Windows' }}
-        run: |
-          Torch_DIR=`python -c 'import os; import torch; print(os.path.dirname(torch.__file__))'`
-          sed -i '31,38c\
-          TORCH_API void lazy_init_num_threads();' ${Torch_DIR}/include/ATen/Parallel.h
-        shell: bash
 
       - name: Install main package
         run: |
